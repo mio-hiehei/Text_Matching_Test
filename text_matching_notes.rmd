@@ -16,7 +16,7 @@ Contribution of Authors:
 2. general text-matching adjustment strategy balancing on low-dimensional density estimate of data.
 3. topical inverse regression matching to match on a jointly estimated propensity for treatment and density estimate.
 
-This approach requires but faclilitates human validation of matching process.
+This approach requires but facliliates human validation of matching process.
 ```{r load packages}
 
 library(stm)

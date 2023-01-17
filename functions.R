@@ -46,9 +46,4 @@ gen_random_words <- function(sigma = c("a", "b", "c", "d", "e", "f", "g", "h", "
   
 }
 
-i<- c(1,5,2,4,2,2,8)
-j <- c(2,5,3,2,4,2,4)
-x <- rpois(7,2)
-M1 <- sparseMatrix(i,j,x=x)
-M1
 
