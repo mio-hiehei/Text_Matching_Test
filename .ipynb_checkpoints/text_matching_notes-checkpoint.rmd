@@ -16,12 +16,11 @@ Contribution of Authors:
 2. general text-matching adjustment strategy balancing on low-dimensional density estimate of data.
 3. topical inverse regression matching to match on a jointly estimated propensity for treatment and density estimate.
 
-This approach requires but faclilitates human validation of matching process.
+This approach requires but facilitates human validation of matching process.
 ```{r load packages}
 
 library(stm)
 library(quanteda)
-library(Matrix)
 
 ```
 
@@ -37,7 +36,6 @@ data <- create_test_data(ncol = 50, nrow = 100)
 dfm <- data$df
 vocab <- gen_random_words(n = ncol(dfm))
 colnames(dfm)  <- vocab
-dfm <- sparseMatrix(data$df)
 treatment <- data$treatment
 y <- data$y
 
@@ -59,10 +57,10 @@ What do we do? Common algorithms try to match using as much data as possible, bu
 K <- 4
 
   t0 <- Sys.time()
-  stm.out.c <- stm(documents = dfm, vocab = vocab, K=K, prevalence=~
-                     treatment, content=~treatment,
-                   max.em.its=100, 
-                   seed=1033311)
+  # stm.out.c <- stm(documents = dfm, vocab = vocab, K=K, prevalence=~
+  #                    treatment, content=~treatment,
+  #                  max.em.its=100, 
+  #                  seed=1033311)
   t1 <- Sys.time()
   t1 - t0
   

@@ -1,0 +1,11 @@
+name: Text_Matching_Test
+channels:
+  - conda-forge
+  - R
+  - defaults
+dependencies:
+  - r-base=4.1
+  - r-stm=1.3
+  - r-quanteda=3.2
+  - r-rmarkdown=2.19
+  - r-irkernel=1.3.1              
