@@ -1,0 +1,8 @@
+"0","  stm.out.c <- stm(documents = dfm, vocab = vocab, K=K, prevalence=~
+                     treatment, content=~treatment,
+                   max.em.its=100, 
+                   seed=1033311)
+"
+"2","Fehler in UseMethod(""asSTMCorpus"") : 
+  nicht anwendbare Methode für 'asSTMCorpus' auf Objekt der Klasse ""c('matrix', 'array', 'integer', 'numeric')"" angewendet
+"

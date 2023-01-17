@@ -1,0 +1,5 @@
+"0","dfm <- sparseMatrix(data$df)
+"
+"2","Fehler in sparseMatrix(data$df) : 
+  exactly one of 'i', 'j', and 'p' must be missing from call
+"

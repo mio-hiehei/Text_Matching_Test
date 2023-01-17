@@ -1,0 +1,70 @@
+---
+title: 'Notes on Text Matching'
+author: 'Mio Hie-Hei'
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+
+## Article ADjusting for Confounding with Text matching
+
+- Problem with Text matching: finding units of analysis that are similar on all dimensions (the number of which in DFMs can be very fucking high)
+
+Contribution of Authors:
+
+1. Framework to use text to address confounding in obs studies.
+2. general text-matching adjustment strategy balancing on low-dimensional density estimate of data.
+3. topical inverse regression matching to match on a jointly estimated propensity for treatment and density estimate.
+
+This approach requires but faclilitates human validation of matching process.
+```{r load packages}
+
+library(stm)
+library(quanteda)
+library(Matrix)
+
+```
+
+
+
+Let's start with some test data.
+
+```{r generate test data}
+
+source("functions.R")
+
+data <- create_test_data(ncol = 50, nrow = 100)
+dfm <- data$df
+vocab <- gen_random_words(n = ncol(dfm))
+colnames(dfm)  <- vocab
+dfm <- sparseMatrix(data$df)
+treatment <- data$treatment
+y <- data$y
+
+
+```
+
+What is the first step? We have a lot of observational data. Now we want to split our dataset in two groups: into a treatment and a control group. We have a very large dimensionality, hence: many columns for fewer rows.
+
+We want to create two subsets of our data that are as equal as possible with regards to all the columns except for our $y$-column.
+
+What do we do? Common algorithms try to match using as much data as possible, but with this approach is going to be hard to match all of the columns because there are too many dimensions and it is unlikely that we will find matches for all. This is where Roberts et al. come into play: We apply TIRM:
+
+1. estimate structural topic model including the treatment variable as a content covariate.
+2. extract each document's (row's) topics calculated as though treated (part of $g(W)$).
+3. Extract each document's (row's) projection onto the treatment variable (part of $g(W)$).
+4. Use a low dimensional matching method to match on $g(W)$ and estimate treatment effects using the matched sample.
+
+```{r estimate stm}
+K <- 4
+
+  t0 <- Sys.time()
+  stm.out.c <- stm(documents = dfm, vocab = vocab, K=K, prevalence=~
+                     treatment, content=~treatment,
+                   max.em.its=100, 
+                   seed=1033311)
+  t1 <- Sys.time()
+  t1 - t0
+  
+
+```
