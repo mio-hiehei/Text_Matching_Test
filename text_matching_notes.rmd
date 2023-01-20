@@ -19,8 +19,8 @@ Contribution of Authors:
 This approach requires but facilitates human validation of matching process.
 ```{r load packages}
 
-library(stm)
-library(quanteda)
+library(optimx)
+library(MASS)
 
 ```
 
@@ -32,13 +32,15 @@ Let's start with some test data.
 
 source("functions.R")
 
-data <- create_test_data(ncol = 50, nrow = 100)
+data <- create_test_data(ncol = 400, nrow = 100)
 dfm <- data$df
 vocab <- gen_random_words(n = ncol(dfm))
 colnames(dfm)  <- vocab
 treatment <- data$treatment
 y <- data$y
+k <- 15
 
+x_2bm <- gen_stm_data(k = k, nrow = nrow(dfm))
 
 ```
 
@@ -53,16 +55,57 @@ What do we do? Common algorithms try to match using as much data as possible, bu
 3. Extract each document's (row's) projection onto the treatment variable (part of $g(W)$).
 4. Use a low dimensional matching method to match on $g(W)$ and estimate treatment effects using the matched sample.
 
-```{r estimate stm}
-K <- 4
 
-  t0 <- Sys.time()
-  # stm.out.c <- stm(documents = dfm, vocab = vocab, K=K, prevalence=~
-  #                    treatment, content=~treatment,
-  #                  max.em.its=100, 
-  #                  seed=1033311)
-  t1 <- Sys.time()
-  t1 - t0
+Let's skip some steps and get to the matching.
+
+```{r ps matching}
+
+prob_score <-  est_prop_score(X=x_2bm, t=treatment, nsim = 1000)
+mat <- cbind(prob_score, treatment, y)
+
+
+ind_control <- which(mat[, "treatment"] == 0)
+
+matched_control <- vector()
+
+while(i <= nrow(mat)){
+
+  if (mat[i, "treatment"] == 1){
+    
+     matched_control[i] <- mat[ind_control[which.min(abs(mat[ind_control, "prob_score"] - mat[i, "prob_score"]))],"prob_score"]
+  } else {
+    
+    matched_control[i] <- NA
+    
+  }
+  cat(matched_control[i], "\n") 
+  i <- i + 1
+
   
+}
 
+foundmatch_control <- matched_control[!(is.na(matched_control))]
+foundmatch_control_index <- which(!(is.na(matched_control)))
+
+
+length(foundmatch_control) == length(which(mat[, "treatment" ] == 1))
+
+matched_df <- mat[c(which(mat[, "treatment" ] == 1), foundmatch_control),]
+
+yt <- mean(matched_df[which(matched_df[,"treatment"] == 1), "y"])
+
+yc <- mean(matched_df[which(matched_df[,"treatment"] == 0), "y"])
+
+table(matched_df[,"treatment"])
+
+yt - yc
+
+
+## Robustness:
+### how many C are used?
+length(unique(foundmatch_control)) / nrow(mat[which(mat[,"treatment"] == 0),])
+
+### Distribution of prosp scores between T and new C
+hist()
+matched_df[which(matched_df[,"treatment"] == 0), "prob_score"]
 ```
