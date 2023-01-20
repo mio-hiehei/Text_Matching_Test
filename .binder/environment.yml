@@ -8,4 +8,6 @@ dependencies:
   - r-stm=1.3
   - r-quanteda=3.2
   - r-rmarkdown=2.19
-  - r-irkernel=1.3.1              
+  - r-irkernel=1.3.1 
+  - r-mass=7.3_57
+  - r-optimx=2022_4.30
